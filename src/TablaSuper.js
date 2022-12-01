@@ -1,8 +1,8 @@
-import { collection, getDoc, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { BD } from "./firebase/config";
 
-const TablaSuper = () =>{
+const TablaSuper = (props) =>{
     const [heroes, setHeroes] = useState([]);
     
     const heroesCollection = collection(BD, 'heroes')
@@ -12,6 +12,12 @@ const TablaSuper = () =>{
             dataHeroes.docs.map((doc)=>({...doc.data(),id:doc.id}))
         )
     }
+
+    const deleteHero = async(id) =>{
+        const HeroDoc = doc(BD, 'heroes', id)
+        await deleteDoc(HeroDoc)
+        getHeroes()
+    } 
 
     useEffect(()=>{
         getHeroes()
@@ -39,6 +45,11 @@ const TablaSuper = () =>{
                         <td>{heroe.edad}</td>
                         <td>{heroe.sexo}</td>
                         <td>{heroe.origen}</td>
+                        <td>{heroe.habilidades.toString()}</td>
+                        <td>
+                            <button onClick={()=>{props.editRow(heroe)}}>Editar</button>
+                            <button onClick={()=>{deleteHero(heroe.id)}}>Eliminar</button>
+                        </td>
                     </tr>
                 ))}
             </tbody>
